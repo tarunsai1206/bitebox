@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BiteBox - Premium Food & Meal Subscriptions</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              500: '#f97316', // Vibrant Orange
+              600: '#ea580c',
+              700: '#c2410c',
+            },
+            accent: {
+              500: '#10b981', // Emerald Green
+              600: '#059669',
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #334155;
+    }
+    
+    /* Smooth transitions */
+    .smooth-transition {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col transition-colors duration-300">
+
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Logo -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('explore')">
+          <div class="bg-gradient-to-tr from-brand-500 to-amber-400 p-2.5 rounded-2xl text-white shadow-lg shadow-brand-500/30">
+            <i class="fa-solid font-black fa-box-open text-2xl"></i>
+          </div>
+          <div>
+            <span class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">Bite<span class="text-brand-500">Box</span></span>
+            <span class="block text-[10px] uppercase tracking-widest font-bold text-slate-400 -mt-1">Fresh & Fast</span>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation Tabs -->
+        <nav class="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl border border-slate-200/60 dark:border-slate-700/50">
+          <button id="nav-explore" onclick="switchView('explore')" class="nav-tab px-5 py-2 rounded-xl text-sm font-semibold text-brand-600 bg-white dark:bg-slate-700 dark:text-white shadow-sm smooth-transition">
+            <i class="fa-solid font-black fa-utensils mr-2"></i>A La Carte Menu
+          </button>
+          <button id="nav-subscription" onclick="switchView('subscription')" class="nav-tab px-5 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-brand-500 dark:hover:text-brand-500 smooth-transition">
+            <i class="fa-solid font-black fa-calendar-check mr-2"></i>BiteBox Subscription
+          </button>
+          <button id="nav-tracker" onclick="switchView('tracker')" class="nav-tab px-5 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-brand-500 dark:hover:text-brand-500 smooth-transition relative">
+            <i class="fa-solid font-black fa-truck-fast mr-2"></i>Order Tracker
+            <span id="tracker-dot" class="hidden absolute top-2 right-2 w-2 h-2 bg-brand-500 rounded-full animate-ping"></span>
+          </button>
+        </nav>
+
+        <!-- Right Side Actions: Theme & Cart -->
+        <div class="flex items-center gap-3">
+          <!-- Dark Mode Toggle -->
+          <button id="theme-toggle" class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 smooth-transition">
+            <i class="fa-solid font-black fa-moon dark:hidden text-lg"></i>
+            <i class="fa-solid font-black fa-sun hidden dark:block text-amber-400 text-lg"></i>
+          </button>
+
+          <!-- Cart Button -->
+          <button onclick="toggleCartDrawer(true)" class="relative flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold px-4 py-3 rounded-2xl shadow-lg shadow-brand-500/25 active:scale-95 smooth-transition">
+            <i class="fa-solid font-black fa-bag-shopping text-lg"></i>
+            <span class="hidden sm:inline">Bag</span>
+            <span id="cart-badge" class="bg-white text-brand-600 font-extrabold text-xs px-2 py-0.5 rounded-full shadow-inner">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Nav Bar (Bottom View Selector) -->
+    <div class="md:hidden flex border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2 py-2 justify-around">
+      <button onclick="switchView('explore')" class="mobile-nav-item flex flex-col items-center gap-1 text-xs font-semibold text-brand-500">
+        <i class="fa-solid font-black fa-utensils text-base"></i>Menu
+      </button>
+      <button onclick="switchView('subscription')" class="mobile-nav-item flex flex-col items-center gap-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
+        <i class="fa-solid font-black fa-calendar-check text-base"></i>Plans
+      </button>
+      <button onclick="switchView('tracker')" class="mobile-nav-item flex flex-col items-center gap-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
+        <i class="fa-solid font-black fa-truck-fast text-base"></i>Tracker
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- VIEW 1: EXPLORE / MENU VIEW -->
+    <section id="view-explore" class="space-y-8">
+      
+      <!-- HERO BANNER -->
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-500 via-brand-500 to-orange-600 p-8 sm:p-12 text-white shadow-2xl">
+        <div class="relative z-10 max-w-xl space-y-4">
+          <span class="inline-block bg-white/20 backdrop-blur-md px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
+            🚀 Flash Offer • 20% Off Code: BITE20
+          </span>
+          <h1 class="text-3xl sm:text-5xl font-black leading-tight tracking-tight">
+            Delicious meals, delivered directly to your door.
+          </h1>
+          <p class="text-white/90 text-sm sm:text-base font-medium">
+            Chef-crafted dishes made from farm-fresh ingredients. Choose single orders or subscribe to automated box plans.
+          </p>
+          <div class="pt-2 flex flex-wrap gap-3">
+            <a href="#menu-anchor" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-3 rounded-2xl shadow-md text-sm transition-transform active:scale-95 inline-block">
+              Order Now
+            </a>
+            <button onclick="switchView('subscription')" class="bg-white/90 hover:bg-white text-slate-900 font-bold px-6 py-3 rounded-2xl shadow-md text-sm transition-transform active:scale-95">
+              Explore Subscriptions
+            </button>
+          </div>
+        </div>
+
+        <!-- Decorative background elements -->
+        <div class="absolute -right-12 -bottom-12 w-80 h-80 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+        <i class="fa-solid font-black fa-burger absolute right-6 bottom-4 text-[180px] opacity-15 pointer-events-none hidden lg:block"></i>
+      </div>
+
+      <!-- SEARCH & FILTER BAR -->
+      <div id="menu-anchor" class="flex flex-col md:flex-row gap-4 items-center justify-between pt-4">
+        <!-- Search Input -->
+        <div class="relative w-full md:w-80">
+          <i class="fa-solid font-black fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Search burgers, pizzas, salads..." 
+            oninput="handleSearchFilter()"
+            class="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm shadow-sm"
+          />
+        </div>
+
+        <!-- Dietary Filters -->
+        <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-2 hidden lg:inline">Filters:</span>
+          <button onclick="setDietaryFilter('all')" id="diet-all" class="diet-btn active px-4 py-2 rounded-xl text-xs font-bold bg-brand-500 text-white shadow-sm transition-all whitespace-nowrap">All Items</button>
+          <button onclick="setDietaryFilter('vegetarian')" id="diet-vegetarian" class="diet-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all whitespace-nowrap">🌱 Veg</button>
+          <button onclick="setDietaryFilter('spicy')" id="diet-spicy" class="diet-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all whitespace-nowrap">🌶️ Spicy</button>
+          <button onclick="setDietaryFilter('popular')" id="diet-popular" class="diet-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all whitespace-nowrap">⭐ Bestsellers</button>
+        </div>
+      </div>
+
+      <!-- CATEGORY TABS -->
+      <div class="flex items-center gap-3 overflow-x-auto pb-2 border-b border-slate-200 dark:border-slate-800">
+        <button onclick="setCategory('all')" class="cat-tab active flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-sm bg-slate-900 text-white dark:bg-white dark:text-slate-900 whitespace-nowrap transition-all shadow-sm" data-cat="all">
+          <i class="fa-solid font-black fa-border-all"></i> All Categories
+        </button>
+        <button onclick="setCategory('burgers')" class="cat-tab flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-sm bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 whitespace-nowrap transition-all border border-slate-200 dark:border-slate-800" data-cat="burgers">
+          <i class="fa-solid font-black fa-burger text-amber-500"></i> Burgers
+        </button>
+        <button onclick="setCategory('bowls')" class="cat-tab flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-sm bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 whitespace-nowrap transition-all border border-slate-200 dark:border-slate-800" data-cat="bowls">
+          <i class="fa-solid font-black fa-bowl-food text-emerald-500"></i> Healthy Bowls
+        </button>
+        <button onclick="setCategory('pizzas')" class="cat-tab flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-sm bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 whitespace-nowrap transition-all border border-slate-200 dark:border-slate-800" data-cat="pizzas">
+          <i class="fa-solid font-black fa-pizza-slice text-red-500"></i> Pizzas
+        </button>
+        <button onclick="setCategory('desserts')" class="cat-tab flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-sm bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 whitespace-nowrap transition-all border border-slate-200 dark:border-slate-800" data-cat="desserts">
+          <i class="fa-solid font-black fa-ice-cream text-pink-500"></i> Desserts
+        </button>
+      </div>
+
+      <!-- FOOD ITEMS GRID -->
+      <div id="food-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Rendered dynamically via JS -->
+      </div>
+
+      <!-- Empty State for Search -->
+      <div id="empty-state" class="hidden text-center py-16 space-y-4">
+        <div class="w-20 h-20 bg-slate-100 dark:bg-slate-800 text-slate-400 rounded-full flex items-center justify-center mx-auto text-3xl">
+          <i class="fa-solid font-black fa-magnifying-glass"></i>
+        </div>
+        <h3 class="text-xl font-bold">No dishes found</h3>
+        <p class="text-slate-500 dark:text-slate-400 text-sm max-w-sm mx-auto">We couldn't find anything matching your search criteria. Try resetting filters.</p>
+        <button onclick="resetFilters()" class="px-4 py-2 bg-brand-500 text-white rounded-xl text-xs font-bold">Reset Filters</button>
+      </div>
+
+    </section>
+
+    <!-- VIEW 2: MEAL SUBSCRIPTION PLAN SELECTOR VIEW -->
+    <section id="view-subscription" class="hidden space-y-8 max-w-5xl mx-auto">
+      <div class="text-center space-y-4 max-w-2xl mx-auto">
+        <span class="bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400 text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider">
+          Automated Gourmet Boxes
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
+          Never worry about lunch or dinner again
+        </h2>
+        <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-base">
+          Subscribe to BiteBox and get curated, chef-prepared meals delivered on your chosen schedule. Pause, cancel, or change options anytime.
+        </p>
+
+        <!-- Frequency Toggle -->
+        <div class="inline-flex p-1.5 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 mt-4">
+          <button id="freq-weekly" onclick="setSubFrequency('weekly')" class="px-6 py-2.5 rounded-xl text-sm font-bold bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm transition-all">
+            Weekly Plan
+          </button>
+          <button id="freq-monthly" onclick="setSubFrequency('monthly')" class="px-6 py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+            Monthly Plan <span class="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full ml-1 font-extrabold">SAVE 15%</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Subscription Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-4">
+        
+        <!-- Starter Box -->
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-200 dark:border-slate-700/60 flex flex-col justify-between hover:shadow-xl transition-all relative">
+          <div class="space-y-4">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Starter BiteBox</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Perfect for individuals wanting quick, fresh meals on weekdays.</p>
+            <div class="flex items-baseline gap-1 pt-2">
+              <span id="price-starter" class="text-4xl font-black text-slate-900 dark:text-white">$45.00</span>
+              <span id="period-starter" class="text-xs font-semibold text-slate-500">/ week</span>
+            </div>
+
+            <ul class="space-y-3 pt-4 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300">
+              <li class="flex items-center gap-2"><i class="fa-solid font-black fa-circle-check text-brand-500"></i> 5 Chef-curated meals</li>
+              <li class="flex items-center gap-2"><i class="fa-solid font-black fa-circle-check text-brand-500"></i> Free eco-friendly thermal bag</li>
+              <li class="flex items-center gap-2"><i class="fa-solid font-black fa-circle-check text-brand-500"></i> Choice of Bowls & Burgers</li>
+              <li class="flex items-center gap-2"><i class="fa-solid font-black fa-circle-check text-brand-500"></i> Pause or skip anytime</li>
+            </ul>
+          </div>
+
+          <button onclick="addSubscriptionToCart('Starter BiteBox', 45, 'starter')" class="mt-8 w-full py-3.5 px-4 rounded-2xl bg-slate-100 dark:bg-slate-700 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-500 text-slate-800 dark:text-white font-bold text-sm transition-all text-center">
+            Subscribe Starter
+          </button>
+        </div>
+
+        <!-- Pro Box (Popular) -->
+        <div class="bg-gradient-to-b from-brand-500 to-orange-600 rounded-3xl p-8 text-white flex flex-col justify-between shadow-xl shadow-brand-500/20 relative scale-105 border-2 border-brand-400">
+          <div class="absolute -top-3.5 right-6 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-md">
+            Most Popular
+          </div>
+          <div class="space-y-4">
+            <h3 class="text-xl font-bold">Fit & Healthy Box</h3>
+            <p class="text-xs text-white/80">Ideal for fitness enthusiasts requiring high protein & fresh macros.</p>
+            <div class="flex items-baseline gap-1 pt-2">
+              <span id="price-pro" class="text-4xl font-black">$79.00</span>
+              <span id="period-pro" class="text-xs font-semibold text-white/80">/ week</span>
+            </div>
+
+            <ul class="space-y-3 pt-4 text-xs sm:text-sm font-medium text-white/90">
+              <li class="flex items-center gap-2"><i class="fa-solid font-black fa-circle-check text-amber-300"></i> 10 Meals + 2 Desserts</li>
+              <li class="flex items-center gap-2"><i class="fa-solid font-black fa-circle-check text-amber-300"></i> Macro-calibrated meals</li>
+              <li class="flex items-center gap-2"><i class="fa-solid font-black fa-circle-check text-amber-300"></i> Priority morning delivery slot</li>
+              <li class="flex items-center gap-2"><i class="fa-solid font-black fa-circle-check text-amber-300"></i> Free cold-pressed juices included</li>
+            </ul>
+          </div>
+
+          <button onclick="addSubscriptionToCart('Fit & Healthy Box', 79, 'pro')" class="mt-8 w-full py-3.5 px-4 rounded-2xl bg-white text-brand-600 hover:bg-slate-900 hover:text-white font-extrabold text-sm transition-all text-center shadow-md">
+            Subscribe Pro Box
+          </button>
+        </div>
+
+        <!-- Family Feast Box -->
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-200 dark:border-slate-700/60 flex flex-col justify-between hover:shadow-xl transition-all">
+          <div class="space-y-4">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Family Feast Box</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Complete dinner solutions for families of 3-4 members.</p>
+            <div class="flex items-baseline gap-1 pt-2">
+              <span id="price-family" class="text-4xl font-black text-slate-900 dark:text-white">$129.00</span>
+              <span id="period-family" class="text-xs font-semibold text-slate-500">/ week</span>
+            </div>
+
+            <ul class="space-y-3 pt-4 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300">
+              <li class="flex items-center gap-2"><i class="fa-solid font-black fa-circle-check text-brand-500"></i> 18 Generous portion meals</li>
+              <li class="flex items-center gap-2"><i class="fa-solid font-black fa-circle-check text-brand-500"></i> Includes Pizza & Dessert combos</li>
+              <li class="flex items-center gap-2"><i class="fa-solid font-black fa-circle-check text-brand-500"></i> Custom delivery schedule</li>
+              <li class="flex items-center gap-2"><i class="fa-solid font-black fa-circle-check text-brand-500"></i> VIP Support Representative</li>
+            </ul>
+          </div>
+
+          <button onclick="addSubscriptionToCart('Family Feast Box', 129, 'family')" class="mt-8 w-full py-3.5 px-4 rounded-2xl bg-slate-100 dark:bg-slate-700 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-500 text-slate-800 dark:text-white font-bold text-sm transition-all text-center">
+            Subscribe Family
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW 3: LIVE ORDER TRACKER VIEW -->
+    <section id="view-tracker" class="hidden max-w-3xl mx-auto space-y-8">
+      
+      <div id="no-active-order" class="text-center py-12 space-y-4 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-800 p-8">
+        <div class="w-20 h-20 bg-slate-100 dark:bg-slate-700 text-slate-400 rounded-full flex items-center justify-center mx-auto text-3xl">
+          <i class="fa-solid font-black fa-box"></i>
+        </div>
+        <h3 class="text-xl font-bold">No active order to track</h3>
+        <p class="text-slate-500 text-sm max-w-md mx-auto">Place an order from our menu or choose a meal subscription plan to activate live status tracking.</p>
+        <button onclick="switchView('explore')" class="px-6 py-3 bg-brand-500 text-white rounded-2xl font-bold text-sm shadow-md hover:bg-brand-600">
+          Browse Menu
+        </button>
+      </div>
+
+      <div id="active-tracker" class="hidden space-y-6">
+        <!-- Tracker Header Card -->
+        <div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+          <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-700/60 pb-6">
+            <div>
+              <span class="text-xs font-bold text-brand-500 uppercase tracking-widest">Live Delivery Status</span>
+              <h2 id="tracker-order-id" class="text-2xl font-black">Order #BB-98234</h2>
+              <p class="text-xs text-slate-400 mt-1">Estimated Arrival: <span id="tracker-eta" class="font-bold text-slate-700 dark:text-slate-200">25 - 30 Mins</span></p>
+            </div>
+            <div class="text-right">
+              <span id="tracker-status-badge" class="inline-block bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 font-extrabold text-xs px-3.5 py-1.5 rounded-full">
+                Preparing Order
+              </span>
+            </div>
+          </div>
+
+          <!-- Progress Visualizer Bar -->
+          <div class="space-y-8 pt-2">
+            <div class="relative flex items-center justify-between">
+              <!-- Connecting Line -->
+              <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1.5 bg-slate-200 dark:bg-slate-700 w-full z-0"></div>
+              <div id="tracker-progress-line" class="absolute left-0 top-1/2 -translate-y-1/2 h-1.5 bg-brand-500 transition-all duration-700 z-0 w-1/3"></div>
+
+              <!-- Step 1: Confirmed -->
+              <div class="relative z-10 flex flex-col items-center gap-2">
+                <div id="step-node-1" class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center font-bold text-sm shadow-md transition-all">
+                  <i class="fa-solid font-black fa-check"></i>
+                </div>
+                <span class="text-[11px] font-bold text-slate-700 dark:text-slate-300">Received</span>
+              </div>
+
+              <!-- Step 2: Preparing -->
+              <div class="relative z-10 flex flex-col items-center gap-2">
+                <div id="step-node-2" class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center font-bold text-sm shadow-md transition-all">
+                  <i class="fa-solid font-black fa-fire"></i>
+                </div>
+                <span class="text-[11px] font-bold text-slate-700 dark:text-slate-300">Preparing</span>
+              </div>
+
+              <!-- Step 3: On The Way -->
+              <div class="relative z-10 flex flex-col items-center gap-2">
+                <div id="step-node-3" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center font-bold text-sm transition-all">
+                  <i class="fa-solid font-black fa-motorcycle"></i>
+                </div>
+                <span class="text-[11px] font-bold text-slate-400">On The Way</span>
+              </div>
+
+              <!-- Step 4: Delivered -->
+              <div class="relative z-10 flex flex-col items-center gap-2">
+                <div id="step-node-4" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center font-bold text-sm transition-all">
+                  <i class="fa-solid font-black fa-house"></i>
+                </div>
+                <span class="text-[11px] font-bold text-slate-400">Delivered</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Driver / Order Details Split -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Courier Information -->
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center text-slate-500 text-2xl font-bold">
+                👨‍🍳
+              </div>
+              <div>
+                <h4 class="font-bold text-sm">Alex Rodriguez</h4>
+                <p class="text-xs text-slate-400">BiteBox Delivery Partner</p>
+                <div class="flex items-center gap-1 text-xs text-amber-500 font-bold mt-0.5">
+                  <i class="fa-solid font-black fa-star text-[10px]"></i> 4.9 (420+ trips)
+                </div>
+              </div>
+            </div>
+            <button onclick="alert('Calling delivery partner...')" class="w-10 h-10 bg-emerald-500/10 text-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-colors">
+              <i class="fa-solid font-black fa-phone"></i>
+            </button>
+          </div>
+
+          <!-- Delivery Address Summary -->
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-1">
+            <span class="text-[10px] uppercase tracking-widest font-extrabold text-slate-400">Delivering To</span>
+            <p id="tracker-address" class="text-sm font-bold text-slate-800 dark:text-slate-200">123 Market Street, Apt 4B, San Francisco, CA</p>
+            <p id="tracker-payment" class="text-xs text-slate-400 pt-1">Paid via Credit Card • Total: <span id="tracker-total-amount" class="font-bold text-slate-700 dark:text-slate-300">$0.00</span></p>
+          </div>
+
+        </div>
+
+        <!-- Ordered Items Summary Breakdown -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
+          <h4 class="font-bold text-sm border-b border-slate-100 dark:border-slate-700 pb-3">Items in this order</h4>
+          <div id="tracker-items-list" class="space-y-3">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- CART SIDEBAR DRAWER -->
+  <div id="cart-drawer-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity duration-300" onclick="toggleCartDrawer(false)"></div>
+
+  <aside id="cart-drawer" class="fixed right-0 top-0 bottom-0 w-full max-w-md bg-white dark:bg-slate-900 z-50 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    <!-- Header -->
+    <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid font-black fa-bag-shopping text-brand-500 text-xl"></i>
+        <h2 class="text-xl font-bold">Your Order Bag</h2>
+      </div>
+      <button onclick="toggleCartDrawer(false)" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full">
+        <i class="fa-solid font-black fa-xmark text-xl"></i>
+      </button>
+    </div>
+
+    <!-- Items List Body -->
+    <div id="cart-items-container" class="flex-grow overflow-y-auto p-6 space-y-4">
+      <!-- Dynamic cart items list rendered here -->
+    </div>
+
+    <!-- Cart Footer & Checkout Summary -->
+    <div id="cart-footer" class="p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 space-y-4">
+      
+      <!-- Promo Code Field -->
+      <div class="flex gap-2">
+        <div class="relative flex-grow">
+          <input 
+            type="text" 
+            id="promo-input" 
+            placeholder="Promo code (e.g. BITE20)" 
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-brand-500"
+          />
+        </div>
+        <button onclick="applyPromoCode()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white rounded-xl text-xs font-bold transition-all">
+          Apply
+        </button>
+      </div>
+
+      <div id="promo-msg" class="hidden text-xs font-bold"></div>
+
+      <!-- Price Totals -->
+      <div class="space-y-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+        <div class="flex justify-between">
+          <span>Subtotal</span>
+          <span id="cart-subtotal" class="font-bold text-slate-800 dark:text-slate-200">$0.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Estimated Tax & Service</span>
+          <span id="cart-tax" class="font-bold text-slate-800 dark:text-slate-200">$0.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Delivery Fee</span>
+          <span id="cart-delivery" class="font-bold text-slate-800 dark:text-slate-200">$2.99</span>
+        </div>
+        <div id="promo-discount-row" class="hidden flex justify-between text-emerald-600 dark:text-emerald-400 font-bold">
+          <span>Promo Discount</span>
+          <span id="cart-discount">-$0.00</span>
+        </div>
+        <div class="flex justify-between text-base font-extrabold text-slate-900 dark:text-white pt-2 border-t border-slate-200 dark:border-slate-700">
+          <span>Total</span>
+          <span id="cart-total" class="text-brand-600 dark:text-brand-400">$0.00</span>
+        </div>
+      </div>
+
+      <!-- Checkout Button -->
+      <button id="checkout-btn" onclick="openCheckoutModal()" class="w-full py-4 bg-brand-500 hover:bg-brand-600 text-white font-extrabold rounded-2xl shadow-lg shadow-brand-500/25 active:scale-95 transition-all flex items-center justify-center gap-2">
+        <span>Proceed to Checkout</span>
+        <i class="fa-solid font-black fa-arrow-right"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- CUSTOMIZE ITEM MODAL -->
+  <div id="item-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh]">
+      
+      <!-- Modal Header Banner -->
+      <div class="relative h-48 bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+        <span id="modal-emoji" class="text-8xl transform hover:scale-110 transition-transform">🍔</span>
+        <button onclick="closeItemModal()" class="absolute top-4 right-4 bg-white/80 dark:bg-slate-900/80 p-2 rounded-full text-slate-600 dark:text-slate-200 hover:bg-white">
+          <i class="fa-solid font-black fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto space-y-6 flex-grow">
+        <div>
+          <div class="flex justify-between items-start">
+            <h3 id="modal-title" class="text-2xl font-extrabold">Item Name</h3>
+            <span id="modal-base-price" class="text-xl font-black text-brand-500">$0.00</span>
+          </div>
+          <p id="modal-description" class="text-xs text-slate-500 dark:text-slate-400 mt-2">Item description goes here.</p>
+        </div>
+
+        <!-- Customizations / Toppings options -->
+        <div class="space-y-4">
+          <h4 class="font-bold text-sm text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Customize Extra Ingredients</h4>
+          <div id="modal-options-list" class="space-y-2">
+            <!-- Dynamic checkboxes generated via JS -->
+          </div>
+        </div>
+
+        <!-- Special Instructions -->
+        <div class="space-y-2">
+          <label class="font-bold text-xs text-slate-700 dark:text-slate-300">Special Cooking Instructions</label>
+          <textarea id="modal-notes" placeholder="e.g. Extra sauce on the side, no onions please" class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 h-20 resize-none"></textarea>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-6 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-800/50">
+        <!-- Quantity Selector -->
+        <div class="flex items-center bg-slate-100 dark:bg-slate-700 rounded-2xl p-1">
+          <button onclick="adjustModalQty(-1)" class="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 font-bold text-sm shadow-sm hover:bg-slate-200 dark:hover:bg-slate-600">-</button>
+          <span id="modal-qty" class="w-10 text-center font-bold text-sm">1</span>
+          <button onclick="adjustModalQty(1)" class="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 font-bold text-sm shadow-sm hover:bg-slate-200 dark:hover:bg-slate-600">+</button>
+        </div>
+
+        <button onclick="confirmAddToCart()" class="flex-grow py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-2xl shadow-lg shadow-brand-500/20 transition-all text-sm flex justify-between px-6 items-center">
+          <span>Add to Order</span>
+          <span id="modal-calculated-total">$0.00</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CHECKOUT & SIMULATION MODAL -->
+  <div id="checkout-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-xl w-full overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh]">
+      
+      <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+        <h3 class="text-xl font-bold flex items-center gap-2">
+          <i class="fa-solid font-black fa-credit-card text-brand-500"></i> Checkout Details
+        </h3>
+        <button onclick="closeCheckoutModal()" class="p-2 text-slate-400 hover:text-slate-600">
+          <i class="fa-solid font-black fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <form id="checkout-form" onsubmit="handleFinalOrderSubmit(event)" class="p-6 overflow-y-auto space-y-4 flex-grow text-xs font-semibold">
+        
+        <div class="space-y-1">
+          <label class="text-slate-600 dark:text-slate-400">Full Name</label>
+          <input required type="text" id="chk-name" value="Jane Doe" class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-brand-500 outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-slate-600 dark:text-slate-400">Email Address</label>
+            <input required type="email" id="chk-email" value="jane@example.com" class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-brand-500 outline-none">
+          </div>
+          <div class="space-y-1">
+            <label class="text-slate-600 dark:text-slate-400">Phone Number</label>
+            <input required type="tel" id="chk-phone" value="(555) 019-2834" class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-brand-500 outline-none">
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-slate-600 dark:text-slate-400">Delivery Address</label>
+          <input required type="text" id="chk-address" value="742 Evergreen Terrace, San Francisco, CA" class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-brand-500 outline-none">
+        </div>
+
+        <div class="pt-2">
+          <label class="text-slate-600 dark:text-slate-400 block mb-2">Payment Option</label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="flex items-center gap-2 p-3 border border-brand-500 rounded-xl bg-brand-50/50 dark:bg-brand-500/10 cursor-pointer">
+              <input type="radio" name="payment" value="card" checked class="text-brand-500 focus:ring-brand-500">
+              <span>💳 Credit/Debit Card</span>
+            </label>
+            <label class="flex items-center gap-2 p-3 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer">
+              <input type="radio" name="payment" value="cod" class="text-brand-500 focus:ring-brand-500">
+              <span>💵 Cash on Delivery</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-1">
+          <div class="flex justify-between font-bold text-slate-800 dark:text-slate-200">
+            <span>Total Payment Due</span>
+            <span id="checkout-final-total" class="text-brand-500 text-sm">$0.00</span>
+          </div>
+          <p class="text-[10px] text-slate-400">By clicking place order, you agree to BiteBox delivery terms.</p>
+        </div>
+
+        <button type="submit" class="w-full py-4 bg-brand-500 hover:bg-brand-600 text-white font-extrabold rounded-2xl shadow-lg shadow-brand-500/25 transition-all text-sm">
+          Place Order Now
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 text-xs font-bold opacity-0 pointer-events-none transition-all duration-300">
+    <i class="fa-solid font-black fa-circle-check text-brand-500 text-base"></i>
+    <span id="toast-message">Item added to cart!</span>
+  </div>
+
+  <!-- APPLICATION LOGIC JS -->
+  <script>
+    // --- SAMPLE MENU DATA ---
+    const MENU_DATA = [
+      {
+        id: 'b1',
+        name: 'Truffle Angus Burger',
+        category: 'burgers',
+        price: 14.99,
+        rating: 4.9,
+        emoji: '🍔',
+        dietary: ['popular'],
+        description: 'Prime Angus beef patty topped with black truffle aioli, aged cheddar, and caramelized onions on a brioche bun.',
+        options: [
+          { name: 'Extra Cheddar Cheese', price: 1.50 },
+          { name: 'Crispy Bacon Strip', price: 2.00 },
+          { name: 'Gluten-Free Bun', price: 1.00 }
+        ]
+      },
+      {
+        id: 'b2',
+        name: 'Spicy Jalapeño Crunch',
+        category: 'burgers',
+        price: 13.50,
+        rating: 4.7,
+        emoji: '🍔',
+        dietary: ['spicy'],
+        description: 'Double patty, pepper jack cheese, pickled jalapeños, crispy onion strings, and firehouse chipotle sauce.',
+        options: [
+          { name: 'Extra Jalapeños', price: 0.75 },
+          { name: 'Double Bacon', price: 2.50 }
+        ]
+      },
+      {
+        id: 'w1',
+        name: 'Avocado Quinoa Power Bowl',
+        category: 'bowls',
+        price: 12.99,
+        rating: 4.8,
+        emoji: '🥗',
+        dietary: ['vegetarian', 'popular'],
+        description: 'Organic quinoa, fresh avocado, roasted chickpeas, kale, cherry tomatoes, and tahini lemon dressing.',
+        options: [
+          { name: 'Grilled Chicken Breast', price: 3.50 },
+          { name: 'Tofu Skewers', price: 2.50 },
+          { name: 'Extra Dressing', price: 0.50 }
+        ]
+      },
+      {
+        id: 'w2',
+        name: 'Sesame Salmon Poke Bowl',
+        category: 'bowls',
+        price: 16.50,
+        rating: 4.9,
+        emoji: '🍲',
+        dietary: ['popular'],
+        description: 'Fresh sushi-grade salmon, edamame, cucumber, radishes, seaweed salad over jasmine rice with spicy mayo.',
+        options: [
+          { name: 'Extra Salmon', price: 4.50 },
+          { name: 'Avocado Scoop', price: 1.50 }
+        ]
+      },
+      {
+        id: 'p1',
+        name: 'Woodfired Margherita',
+        category: 'pizzas',
+        price: 15.00,
+        rating: 4.6,
+        emoji: '🍕',
+        dietary: ['vegetarian'],
+        description: 'San Marzano tomato sauce, fresh mozzarella di bufala, basil leaves, and extra virgin olive oil.',
+        options: [
+          { name: 'Extra Mozzarella', price: 2.00 },
+          { name: 'Garlic Crust Dip', price: 1.00 }
+        ]
+      },
+      {
+        id: 'p2',
+        name: 'Double Pepperoni Dynamite',
+        category: 'pizzas',
+        price: 17.50,
+        rating: 4.9,
+        emoji: '🍕',
+        dietary: ['spicy', 'popular'],
+        description: 'Loaded with crispy cupped pepperoni, hot honey drizzle, chili flakes, and rich tomato sauce.',
+        options: [
+          { name: 'Hot Honey Dip', price: 1.25 },
+          { name: 'Extra Pepperoni', price: 2.50 }
+        ]
+      },
+      {
+        id: 'd1',
+        name: 'Matcha Green Tea Gelato',
+        category: 'desserts',
+        price: 6.99,
+        rating: 4.7,
+        emoji: '🍨',
+        dietary: ['vegetarian'],
+        description: 'Authentic Japanese Uji matcha artisanal gelato served with toasted sesame waffle wafers.',
+        options: [
+          { name: 'Extra Waffle Cone', price: 0.75 },
+          { name: 'Sweet Red Bean Topping', price: 1.00 }
+        ]
+      },
+      {
+        id: 'd2',
+        name: 'Molten Chocolate Lava Cake',
+        category: 'desserts',
+        price: 8.50,
+        rating: 4.9,
+        emoji: '🍰',
+        dietary: ['popular'],
+        description: 'Warm rich dark chocolate cake with a gooey oozing center, served with vanilla bean ice cream.',
+        options: [
+          { name: 'Extra Vanilla Scoop', price: 1.50 }
+        ]
+      }
+    ];
+
+    // --- STATE MANAGEMENT ---
+    let cart = [];
+    let activeCategory = 'all';
+    let activeDietary = 'all';
+    let searchKeyword = '';
+    let selectedSubFreq = 'weekly';
+    let appliedDiscountPercentage = 0;
+    
+    // Modal state
+    let currentModalItem = null;
+    let modalQty = 1;
+    let selectedModalOptions = [];
+
+    // Order Tracking state
+    let activeOrder = null;
+    let trackerTimer = null;
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      renderMenuItems();
+      setupThemeToggle();
+    });
+
+    // --- NAVIGATION CONTROLLER ---
+    function switchView(viewName) {
+      // Hide all views
+      document.getElementById('view-explore').classList.add('hidden');
+      document.getElementById('view-subscription').classList.add('hidden');
+      document.getElementById('view-tracker').classList.add('hidden');
+
+      // Update Nav Buttons
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('text-brand-600', 'bg-white', 'dark:bg-slate-700', 'dark:text-white', 'shadow-sm');
+        tab.classList.add('text-slate-600', 'dark:text-slate-300');
+      });
+
+      const activeTab = document.getElementById(`nav-${viewName}`);
+      if (activeTab) {
+        activeTab.classList.add('text-brand-600', 'bg-white', 'dark:bg-slate-700', 'dark:text-white', 'shadow-sm');
+        activeTab.classList.remove('text-slate-600', 'dark:text-slate-300');
+      }
+
+      // Show Selected View
+      document.getElementById(`view-${viewName}`).classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // --- DARK / LIGHT THEME TOGGLE ---
+    function setupThemeToggle() {
+      const toggleBtn = document.getElementById('theme-toggle');
+      toggleBtn.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+      });
+    }
+
+    // --- RENDER MENU ITEMS ---
+    function renderMenuItems() {
+      const grid = document.getElementById('food-grid');
+      const emptyState = document.getElementById('empty-state');
+      grid.innerHTML = '';
+
+      const filtered = MENU_DATA.filter(item => {
+        const matchesCategory = (activeCategory === 'all' || item.category === activeCategory);
+        const matchesDietary = (activeDietary === 'all' || item.dietary.includes(activeDietary));
+        const matchesSearch = item.name.toLowerCase().includes(searchKeyword.toLowerCase()) || 
+                              item.description.toLowerCase().includes(searchKeyword.toLowerCase());
+        return matchesCategory && matchesDietary && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+        filtered.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200/80 dark:border-slate-800 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group';
+          
+          card.innerHTML = `
+            <div>
+              <div class="relative bg-slate-100 dark:bg-slate-700/50 rounded-2xl h-44 flex items-center justify-center overflow-hidden mb-4">
+                <span class="text-7xl group-hover:scale-110 transition-transform duration-300">${item.emoji}</span>
+                <span class="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-black text-slate-800 dark:text-slate-200 shadow-sm flex items-center gap-1">
+                  <i class="fa-solid font-black fa-star text-amber-400"></i> ${item.rating}
+                </span>
+                ${item.dietary.includes('spicy') ? '<span class="absolute top-3 left-3 bg-red-500/10 text-red-500 text-[10px] font-black px-2 py-0.5 rounded-full border border-red-500/20">🌶️ SPICY</span>' : ''}
+              </div>
+
+              <h3 class="font-extrabold text-lg text-slate-900 dark:text-white line-clamp-1">${item.name}</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">${item.description}</p>
+            </div>
+
+            <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
+              <span class="text-xl font-black text-slate-900 dark:text-white">$${item.price.toFixed(2)}</span>
+              <button onclick="openItemModal('${item.id}')" class="bg-brand-500 hover:bg-brand-600 text-white p-3 rounded-2xl font-bold shadow-md shadow-brand-500/20 active:scale-95 transition-all flex items-center gap-2 text-xs">
+                <i class="fa-solid font-black fa-plus"></i> Customize
+              </button>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+    }
+
+    // --- CATEGORY & SEARCH FILTERS ---
+    function setCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll('.cat-tab').forEach(btn => {
+        if(btn.dataset.cat === cat) {
+          btn.className = "cat-tab active flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-sm bg-slate-900 text-white dark:bg-white dark:text-slate-900 whitespace-nowrap transition-all shadow-sm";
+        } else {
+          btn.className = "cat-tab flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-sm bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 whitespace-nowrap transition-all border border-slate-200 dark:border-slate-800";
+        }
+      });
+      renderMenuItems();
+    }
+
+    function setDietaryFilter(diet) {
+      activeDietary = diet;
+      document.querySelectorAll('.diet-btn').forEach(btn => {
+        btn.classList.remove('bg-brand-500', 'text-white', 'shadow-sm');
+        btn.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300');
+      });
+      const activeBtn = document.getElementById(`diet-${diet}`);
+      if(activeBtn) {
+        activeBtn.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300');
+        activeBtn.classList.add('bg-brand-500', 'text-white', 'shadow-sm');
+      }
+      renderMenuItems();
+    }
+
+    function handleSearchFilter() {
+      searchKeyword = document.getElementById('search-input').value;
+      renderMenuItems();
+    }
+
+    function resetFilters() {
+      document.getElementById('search-input').value = '';
+      searchKeyword = '';
+      activeDietary = 'all';
+      activeCategory = 'all';
+      setCategory('all');
+      setDietaryFilter('all');
+    }
+
+    // --- ITEM CUSTOMIZATION MODAL ---
+    function openItemModal(itemId) {
+      currentModalItem = MENU_DATA.find(i => i.id === itemId);
+      if(!currentModalItem) return;
+
+      modalQty = 1;
+      selectedModalOptions = [];
+
+      document.getElementById('modal-emoji').innerText = currentModalItem.emoji;
+      document.getElementById('modal-title').innerText = currentModalItem.name;
+      document.getElementById('modal-description').innerText = currentModalItem.description;
+      document.getElementById('modal-base-price').innerText = `$${currentModalItem.price.toFixed(2)}`;
+      document.getElementById('modal-qty').innerText = modalQty;
+      document.getElementById('modal-notes').value = '';
+
+      // Render Checkbox Options
+      const optionsContainer = document.getElementById('modal-options-list');
+      optionsContainer.innerHTML = '';
+
+      if (currentModalItem.options && currentModalItem.options.length > 0) {
+        currentModalItem.options.forEach((opt, idx) => {
+          const optRow = document.createElement('label');
+          optRow.className = "flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer text-xs font-semibold";
+          optRow.innerHTML = `
+            <div class="flex items-center gap-2">
+              <input type="checkbox" onchange="toggleModalOption(${idx})" class="rounded text-brand-500 focus:ring-brand-500 w-4 h-4">
+              <span>${opt.name}</span>
+            </div>
+            <span class="text-slate-500 dark:text-slate-400">+$${opt.price.toFixed(2)}</span>
+          `;
+          optionsContainer.appendChild(optRow);
+        });
+      } else {
+        optionsContainer.innerHTML = `<p class="text-xs text-slate-400">No extra toppings available for this item.</p>`;
+      }
+
+      updateModalTotal();
+
+      const modal = document.getElementById('item-modal');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modal.firstElementChild.classList.remove('scale-95');
+    }
+
+    function closeItemModal() {
+      const modal = document.getElementById('item-modal');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      modal.firstElementChild.classList.add('scale-95');
+    }
+
+    function toggleModalOption(optIdx) {
+      const option = currentModalItem.options[optIdx];
+      const existsIdx = selectedModalOptions.findIndex(o => o.name === option.name);
+      if(existsIdx > -1) {
+        selectedModalOptions.splice(existsIdx, 1);
+      } else {
+        selectedModalOptions.push(option);
+      }
+      updateModalTotal();
+    }
+
+    function adjustModalQty(delta) {
+      if(modalQty + delta >= 1) {
+        modalQty += delta;
+        document.getElementById('modal-qty').innerText = modalQty;
+        updateModalTotal();
+      }
+    }
+
+    function updateModalTotal() {
+      const optionsCost = selectedModalOptions.reduce((acc, curr) => acc + curr.price, 0);
+      const total = (currentModalItem.price + optionsCost) * modalQty;
+      document.getElementById('modal-calculated-total').innerText = `$${total.toFixed(2)}`;
+    }
+
+    function confirmAddToCart() {
+      const optionsCost = selectedModalOptions.reduce((acc, curr) => acc + curr.price, 0);
+      const unitPrice = currentModalItem.price + optionsCost;
+      const notes = document.getElementById('modal-notes').value;
+
+      const cartItem = {
+        id: Date.now().toString(),
+        name: currentModalItem.name,
+        unitPrice: unitPrice,
+        qty: modalQty,
+        emoji: currentModalItem.emoji,
+        options: [...selectedModalOptions],
+        notes: notes
+      };
+
+      cart.push(cartItem);
+      updateCartUI();
+      closeItemModal();
+      showToast(`Added ${currentModalItem.name} to your bag!`);
+    }
+
+    // --- SUBSCRIPTION PLAN HANDLER ---
+    function setSubFrequency(freq) {
+      selectedSubFreq = freq;
+      const isMonthly = freq === 'monthly';
+      const factor = isMonthly ? 3.4 : 1; // Discounted monthly factor
+
+      document.getElementById('freq-weekly').className = isMonthly ? 
+        'px-6 py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all' : 
+        'px-6 py-2.5 rounded-xl text-sm font-bold bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm transition-all';
+      
+      document.getElementById('freq-monthly').className = isMonthly ? 
+        'px-6 py-2.5 rounded-xl text-sm font-bold bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm transition-all' : 
+        'px-6 py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all';
+
+      document.getElementById('price-starter').innerText = `$${(45 * factor).toFixed(2)}`;
+      document.getElementById('period-starter').innerText = isMonthly ? '/ month' : '/ week';
+
+      document.getElementById('price-pro').innerText = `$${(79 * factor).toFixed(2)}`;
+      document.getElementById('period-pro').innerText = isMonthly ? '/ month' : '/ week';
+
+      document.getElementById('price-family').innerText = `$${(129 * factor).toFixed(2)}`;
+      document.getElementById('period-family').innerText = isMonthly ? '/ month' : '/ week';
+    }
+
+    function addSubscriptionToCart(planTitle, basePrice, key) {
+      const factor = selectedSubFreq === 'monthly' ? 3.4 : 1;
+      const price = basePrice * factor;
+
+      const subItem = {
+        id: Date.now().toString(),
+        name: `${planTitle} (${selectedSubFreq.toUpperCase()})`,
+        unitPrice: price,
+        qty: 1,
+        emoji: '📦',
+        options: [{ name: `Auto delivery ${selectedSubFreq}`, price: 0 }],
+        notes: 'Meal Box Subscription'
+      };
+
+      cart.push(subItem);
+      updateCartUI();
+      toggleCartDrawer(true);
+      showToast(`Subscribed to ${planTitle}!`);
+    }
+
+    // --- CART SIDEBAR DRAWER ---
+    function toggleCartDrawer(open) {
+      const drawer = document.getElementById('cart-drawer');
+      const overlay = document.getElementById('cart-drawer-overlay');
+
+      if(open) {
+        drawer.classList.remove('translate-x-full');
+        overlay.classList.remove('opacity-0', 'pointer-events-none');
+      } else {
+        drawer.classList.add('translate-x-full');
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+      }
+    }
+
+    function updateCartUI() {
+      const container = document.getElementById('cart-items-container');
+      const badge = document.getElementById('cart-badge');
+      
+      const totalCount = cart.reduce((acc, item) => acc + item.qty, 0);
+      badge.innerText = totalCount;
+
+      container.innerHTML = '';
+
+      if(cart.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-16 space-y-3">
+            <div class="text-5xl">🛍️</div>
+            <h4 class="font-bold text-base">Your Bag is Empty</h4>
+            <p class="text-xs text-slate-400">Add dishes from our menu or choose a meal subscription plan.</p>
+          </div>
+        `;
+        document.getElementById('checkout-btn').disabled = true;
+        document.getElementById('checkout-btn').classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        document.getElementById('checkout-btn').disabled = false;
+        document.getElementById('checkout-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+
+        cart.forEach((item, index) => {
+          const itemEl = document.createElement('div');
+          itemEl.className = "flex items-start justify-between gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60";
+          
+          const optionsText = item.options.map(o => o.name).join(', ');
+
+          itemEl.innerHTML = `
+            <div class="text-3xl">${item.emoji}</div>
+            <div class="flex-grow space-y-1">
+              <h5 class="font-bold text-xs text-slate-900 dark:text-white">${item.name}</h5>
+              ${optionsText ? `<p class="text-[10px] text-brand-600 dark:text-brand-400 font-medium">+ ${optionsText}</p>` : ''}
+              <div class="font-extrabold text-xs text-slate-800 dark:text-slate-200">$${(item.unitPrice * item.qty).toFixed(2)}</div>
+            </div>
+
+            <!-- Qty controls -->
+            <div class="flex items-center gap-2 bg-white dark:bg-slate-900 px-2 py-1 rounded-xl border border-slate-200 dark:border-slate-700">
+              <button onclick="changeCartQty(${index}, -1)" class="text-xs font-bold px-1 text-slate-500 hover:text-slate-900 dark:hover:text-white">-</button>
+              <span class="text-xs font-bold">${item.qty}</span>
+              <button onclick="changeCartQty(${index}, 1)" class="text-xs font-bold px-1 text-slate-500 hover:text-slate-900 dark:hover:text-white">+</button>
+            </div>
+          `;
+          container.appendChild(itemEl);
+        });
+      }
+
+      calculateCartTotals();
+    }
+
+    function changeCartQty(index, delta) {
+      if (cart[index].qty + delta <= 0) {
+        cart.splice(index, 1);
+      } else {
+        cart[index].qty += delta;
+      }
+      updateCartUI();
+    }
+
+    function calculateCartTotals() {
+      const subtotal = cart.reduce((acc, item) => acc + (item.unitPrice * item.qty), 0);
+      const tax = subtotal * 0.08;
+      const delivery = cart.length > 0 ? 2.99 : 0.00;
+      const discount = subtotal * (appliedDiscountPercentage / 100);
+      const total = subtotal + tax + delivery - discount;
+
+      document.getElementById('cart-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+      document.getElementById('cart-tax').innerText = `$${tax.toFixed(2)}`;
+      document.getElementById('cart-delivery').innerText = `$${delivery.toFixed(2)}`;
+      document.getElementById('cart-total').innerText = `$${Math.max(0, total).toFixed(2)}`;
+
+      if(appliedDiscountPercentage > 0) {
+        document.getElementById('promo-discount-row').classList.remove('hidden');
+        document.getElementById('cart-discount').innerText = `-$${discount.toFixed(2)}`;
+      } else {
+        document.getElementById('promo-discount-row').classList.add('hidden');
+      }
+    }
+
+    function applyPromoCode() {
+      const input = document.getElementById('promo-input').value.trim().toUpperCase();
+      const msg = document.getElementById('promo-msg');
+      msg.classList.remove('hidden');
+
+      if (input === 'BITE20') {
+        appliedDiscountPercentage = 20;
+        msg.className = "text-xs font-bold text-emerald-500";
+        msg.innerText = "20% Promo discount applied!";
+      } else if (input === 'WELCOME10') {
+        appliedDiscountPercentage = 10;
+        msg.className = "text-xs font-bold text-emerald-500";
+        msg.innerText = "10% Promo discount applied!";
+      } else {
+        appliedDiscountPercentage = 0;
+        msg.className = "text-xs font-bold text-red-500";
+        msg.innerText = "Invalid promo code.";
+      }
+      calculateCartTotals();
+    }
+
+    // --- CHECKOUT & ORDER SUBMISSION ---
+    function openCheckoutModal() {
+      if(cart.length === 0) return;
+      toggleCartDrawer(false);
+
+      const totalStr = document.getElementById('cart-total').innerText;
+      document.getElementById('checkout-final-total').innerText = totalStr;
+
+      const modal = document.getElementById('checkout-modal');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modal.firstElementChild.classList.remove('scale-95');
+    }
+
+    function closeCheckoutModal() {
+      const modal = document.getElementById('checkout-modal');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      modal.firstElementChild.classList.add('scale-95');
+    }
+
+    function handleFinalOrderSubmit(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('chk-name').value;
+      const address = document.getElementById('chk-address').value;
+      const totalAmount = document.getElementById('checkout-final-total').innerText;
+
+      activeOrder = {
+        id: 'BB-' + Math.floor(100000 + Math.random() * 900000),
+        items: [...cart],
+        address: address,
+        total: totalAmount,
+        statusStep: 1, // 1: Received, 2: Preparing, 3: On Way, 4: Delivered
+        customerName: name
+      };
+
+      // Clear Cart
+      cart = [];
+      updateCartUI();
+      closeCheckoutModal();
+
+      // Show dot on tracker tab
+      document.getElementById('tracker-dot').classList.remove('hidden');
+
+      // Switch to order tracker
+      switchView('tracker');
+      renderTrackerView();
+      startOrderStatusSimulation();
+
+      showToast('Order placed successfully!');
+    }
+
+    // --- ORDER TRACKER SIMULATION ---
+    function renderTrackerView() {
+      if(!activeOrder) {
+        document.getElementById('no-active-order').classList.remove('hidden');
+        document.getElementById('active-tracker').classList.add('hidden');
+        return;
+      }
+
+      document.getElementById('no-active-order').classList.add('hidden');
+      document.getElementById('active-tracker').classList.remove('hidden');
+
+      document.getElementById('tracker-order-id').innerText = `Order #${activeOrder.id}`;
+      document.getElementById('tracker-address').innerText = activeOrder.address;
+      document.getElementById('tracker-total-amount').innerText = activeOrder.total;
+
+      // Items list
+      const itemsContainer = document.getElementById('tracker-items-list');
+      itemsContainer.innerHTML = '';
+      activeOrder.items.forEach(item => {
+        const row = document.createElement('div');
+        row.className = "flex justify-between items-center text-xs font-semibold";
+        row.innerHTML = `
+          <span>${item.emoji} ${item.name} x${item.qty}</span>
+          <span class="text-slate-500">$${(item.unitPrice * item.qty).toFixed(2)}</span>
+        `;
+        itemsContainer.appendChild(row);
+      });
+
+      updateTrackerVisuals();
+    }
+
+    function updateTrackerVisuals() {
+      if(!activeOrder) return;
+
+      const step = activeOrder.statusStep;
+      const badge = document.getElementById('tracker-status-badge');
+      const progressLine = document.getElementById('tracker-progress-line');
+
+      // Reset Node styles
+      for(let i=1; i<=4; i++) {
+        const node = document.getElementById(`step-node-${i}`);
+        if(i <= step) {
+          node.className = "w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center font-bold text-sm shadow-md transition-all";
+        } else {
+          node.className = "w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center font-bold text-sm transition-all";
+        }
+      }
+
+      if(step === 1) {
+        badge.innerText = "Order Received";
+        progressLine.style.width = "0%";
+        document.getElementById('tracker-eta').innerText = "30 - 35 Mins";
+      } else if(step === 2) {
+        badge.innerText = "Preparing Order";
+        progressLine.style.width = "33%";
+        document.getElementById('tracker-eta').innerText = "20 - 25 Mins";
+      } else if(step === 3) {
+        badge.innerText = "Out for Delivery";
+        progressLine.style.width = "66%";
+        document.getElementById('tracker-eta').innerText = "5 - 10 Mins";
+      } else if(step === 4) {
+        badge.innerText = "Order Delivered!";
+        badge.className = "inline-block bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-extrabold text-xs px-3.5 py-1.5 rounded-full";
+        progressLine.style.width = "100%";
+        document.getElementById('tracker-eta').innerText = "Arrived";
+        document.getElementById('tracker-dot').classList.add('hidden');
+      }
+    }
+
+    function startOrderStatusSimulation() {
+      if(trackerTimer) clearInterval(trackerTimer);
+
+      trackerTimer = setInterval(() => {
+        if(activeOrder && activeOrder.statusStep < 4) {
+          activeOrder.statusStep += 1;
+          updateTrackerVisuals();
+          showToast(`Order status updated: Step ${activeOrder.statusStep} of 4`);
+        } else {
+          clearInterval(trackerTimer);
+        }
+      }, 7000); // Progresses status every 7 seconds for simulation demo
+    }
+
+    // --- TOAST NOTIFICATIONS ---
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').innerText = message;
+
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
